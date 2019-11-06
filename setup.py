@@ -15,7 +15,7 @@ here = Path(__file__).parent
 
 # Load the package's __init__.py file as a dictionary.
 pkg = {}
-with open(here / 'prophetess' / 'plugins' / 'netbox' / '__init__.py', 'r', 'utf-8') as f:
+with open(here / 'prophetess_netbox' / '__init__.py', 'r', 'utf-8') as f:
     pkg = {k: v for k, v in re.findall(r"^(__\w+__) = \'(.+)\'", f.read(), re.M)}
 
 # Load the README
@@ -36,7 +36,7 @@ setup(
     author_email=pkg['__author_email__'],
     packages=find_packages(),
     package_data={'': ['LICENSE']},
-    package_dir={'prophetess': 'prophetess'},
+    entry_points={'prophetess.plugins': 'netbox = prophetess_netbox'},
     python_requires='>=3.6',
     install_requires=[
         'aionetbox',
