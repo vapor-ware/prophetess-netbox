@@ -52,7 +52,6 @@ class NetboxLoader(Loader):
                 continue
 
             r = await self.client.entity(
-                api=self.client.get_api(rules.get('endpoint')),
                 endpoint=rules.get('endpoint'),
                 model=rules.get('model'),
                 params=self.build(rules.get('pk', []), record)
@@ -80,11 +79,9 @@ class NetboxLoader(Loader):
 
     async def run(self, record):
         """ Overload Loader.run to execute netbox loading of a record """
-        api = self.client.get_api(self.config.get('endpoint'))
 
         try:
             er = await self.client.entity(
-                api=api,
                 endpoint=self.config.get('endpoint'),
                 model=self.config.get('model'),
                 params=self.build_params(self.config.get('pk'), record)
@@ -112,7 +109,7 @@ class NetboxLoader(Loader):
 
             payload['data'] = changed_record
 
-        func = self.client.build_model(api, self.config.get('endpoint'), self.config.get('model'), method)
+        func = self.client.build_model(self.config.get('endpoint'), self.config.get('model'), method)
 
         try:
             resp = await func(**payload)
