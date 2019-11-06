@@ -22,7 +22,7 @@ class NetboxClient:
         self.loop = loop or asyncio.get_event_loop()
         self.__cache = {} # TODO: make a decorator that caches api classes?
 
-        self.client = AIONetbox.from_openapi(host=host, api_key=api_key)
+        self.client = AIONetbox.from_openapi(url=host, api_key=api_key)
 
     async def close(self):
         await self.client.close()
