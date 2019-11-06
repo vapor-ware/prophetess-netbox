@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import os
+import re
 
 from pathlib import Path
 from typing import List
@@ -22,7 +23,7 @@ def parse_requirements(filename: str) -> List[str]:
 # Load the package's __init__.py file as a dictionary.
 pkg = {}
 with open(here / 'prophetess' / 'plugins' / 'netbox' / '__init__.py', 'r', 'utf-8') as f:
-    exec(f.read(), pkg)
+    pkg = {k: v for k, v in re.findall(r"^(__\w+__) = \'(.+)\'", f.read(), re.M)}
 
 # Load the README
 readme = ''
@@ -48,6 +49,8 @@ setup(
     package_data={'': ['LICENSE']},
     package_dir={'prophetess': 'prophetess'},
     python_requires='>=3.6',
-    install_requires=req,
+    install_requires=[
+        'aionetbox',
+    ],
     zip_safe=False,
 )
