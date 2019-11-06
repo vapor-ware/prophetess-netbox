@@ -3,8 +3,8 @@ import logging
 import collections
 
 from prophetess.plugin import Loader
-from prophetess.plugins.netbox.client import NetboxClient
-from prophetess.plugins.netbox.exceptions import (
+from prophetess_netbox.client import NetboxClient
+from prophetess_netbox.exceptions import (
     InvalidPKConfig,
     InvalidNetboxEndpoint,
     InvalidNetboxOperation,

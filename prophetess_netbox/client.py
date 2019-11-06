@@ -5,7 +5,7 @@ import logging
 
 from aionetbox import AIONetbox
 
-from prophetess.plugins.netbox.exceptions import (
+from prophetess_netbox.exceptions import (
     InvalidPKConfig,
     InvalidNetboxEndpoint,
     InvalidNetboxOperation,
