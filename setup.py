@@ -13,13 +13,6 @@ from setuptools import find_packages, setup
 here = Path(__file__).parent
 
 
-def parse_requirements(filename: str) -> List[str]:
-    reqs = (here / filename).read_text().strip().split('\n')
-    reqs = [r.strip() for r in reqs]
-    reqs = [r for r in sorted(reqs) if r and not r.startswith('#')]
-    return reqs
-
-
 # Load the package's __init__.py file as a dictionary.
 pkg = {}
 with open(here / 'prophetess' / 'plugins' / 'netbox' / '__init__.py', 'r', 'utf-8') as f:
@@ -31,15 +24,11 @@ if os.path.exists(here / 'README.md'):
     with open(here / 'README.md', 'r', 'utf-8') as f:
         readme = f.read()
 
-req = []
-if os.path.exists(here / 'requirements.txt'):
-    req = parse_requirements('requirements.txt')
-
-
 setup(
     name=pkg['__title__'],
     version=pkg['__version__'],
     description=pkg['__description__'],
+    license=pkg['__license__'],
     long_description=readme,
     long_description_content_type='text/markdown',
     url=pkg['__url__'],
@@ -51,6 +40,12 @@ setup(
     python_requires='>=3.6',
     install_requires=[
         'aionetbox',
+    ],
+    classifiers=[
+        'Environment :: Plugins',
+        'Programming Language :: Python :: 3',
+        'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
+        'Operating System :: OS Independent',
     ],
     zip_safe=False,
 )
