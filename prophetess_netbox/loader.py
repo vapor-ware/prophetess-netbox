@@ -10,7 +10,7 @@ from prophetess_netbox.exceptions import (
     InvalidNetboxOperation,
 )
 
-log = logging.getLogger(__name__)
+log = logging.getLogger('prophetess.plugins.netbox.loader')
 
 
 class NetboxLoader(Loader):
@@ -77,6 +77,21 @@ class NetboxLoader(Loader):
 
         return output
 
+    def diff_records(self, cur_record, new_record):
+
+        changed = {}
+
+        for k, v in new_record.items():
+            if k in self.config.get('fk', {}):
+                if getattr(cur_record, k).id != v:
+                    changed[k] = v
+                continue
+
+            if getattr(cur_record, k) != v:
+                changed[k] = v
+
+        return changed
+
     async def run(self, record):
         """ Overload Loader.run to execute netbox loading of a record """
 
@@ -102,7 +117,7 @@ class NetboxLoader(Loader):
 
         if method == 'partial_update':
             lookups = self.config.get('lookups', {}).keys()
-            changed_record = {k: record[k] for k, v in record.items() if getattr(er, k) != v}
+            changed_record = self.diff_records(er, record)
             if not changed_record:
                 log.debug('Skipping {} as no data has changed'.format(record))
                 return

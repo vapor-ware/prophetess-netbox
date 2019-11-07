@@ -11,7 +11,7 @@ from prophetess_netbox.exceptions import (
     InvalidNetboxOperation,
 )
 
-log = logging.getLogger(__name__)
+log = logging.getLogger('prophetess.plugins.netbox.client')
 
 
 class NetboxClient:
