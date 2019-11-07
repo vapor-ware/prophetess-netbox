@@ -54,7 +54,7 @@ class NetboxLoader(Loader):
             r = await self.client.entity(
                 endpoint=rules.get('endpoint'),
                 model=rules.get('model'),
-                params=self.build(rules.get('pk', []), record)
+                params=self.build_params(rules.get('pk', []), record)
             )
 
             if not r:
