@@ -1,0 +1,8 @@
+*.pyc
+__pycache__
+build
+dist
+.tox
+*.egg-info
+.coverage
+.pytest_cache

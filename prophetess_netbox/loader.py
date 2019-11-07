@@ -4,11 +4,7 @@ import collections
 
 from prophetess.plugin import Loader
 from prophetess_netbox.client import NetboxClient
-from prophetess_netbox.exceptions import (
-    InvalidPKConfig,
-    InvalidNetboxEndpoint,
-    InvalidNetboxOperation,
-)
+
 
 log = logging.getLogger('prophetess.plugins.netbox.loader')
 
@@ -95,14 +91,11 @@ class NetboxLoader(Loader):
     async def run(self, record):
         """ Overload Loader.run to execute netbox loading of a record """
 
-        try:
-            er = await self.client.entity(
-                endpoint=self.config.get('endpoint'),
-                model=self.config.get('model'),
-                params=self.build_params(self.config.get('pk'), record)
-            )
-        except:
-            raise
+        er = await self.client.entity(
+            endpoint=self.config.get('endpoint'),
+            model=self.config.get('model'),
+            params=self.build_params(self.config.get('pk'), record)
+        )
 
         record = await self.parse_fk(record)
 
@@ -116,7 +109,6 @@ class NetboxLoader(Loader):
             payload['id'] = er.id
 
         if method == 'partial_update':
-            lookups = self.config.get('lookups', {}).keys()
             changed_record = self.diff_records(er, record)
             if not changed_record:
                 log.debug('Skipping {} as no data has changed'.format(record))
@@ -127,7 +119,7 @@ class NetboxLoader(Loader):
         func = self.client.build_model(self.config.get('endpoint'), self.config.get('model'), method)
 
         try:
-            resp = await func(**payload)
+            return await func(**payload)
         except ValueError:
             # Bad response
             raise

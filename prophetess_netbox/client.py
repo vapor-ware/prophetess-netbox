@@ -20,7 +20,7 @@ class NetboxClient:
     def __init__(self, *, host, api_key, loop=None):
         """Initialize a single instance with no authentication."""
         self.loop = loop or asyncio.get_event_loop()
-        self.__cache = {} # TODO: make a decorator that caches api classes?
+        self.__cache = {}  # TODO: make a decorator that caches api classes?
 
         self.client = AIONetbox.from_openapi(url=host, api_key=api_key)
 
@@ -62,7 +62,7 @@ class NetboxClient:
 
         elif data.count > 1:
             kwargs = ', '.join('='.join(i) for i in params.items())
-            raise InvalidPKConfig('Not enough criteria for {} <{}({})>'.format(self.id, func, kwargs))
+            raise InvalidPKConfig('Not enough criteria for {} <{}({})>'.format(self.id, endpoint, kwargs))
 
         return data.results.pop(-1)
 

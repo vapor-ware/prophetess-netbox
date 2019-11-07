@@ -1,1 +1,2 @@
 aionetbox==1.0.1
+prophetess>=0.1.0,<1.0
