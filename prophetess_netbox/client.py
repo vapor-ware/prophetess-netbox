@@ -41,7 +41,7 @@ class NetboxClient:
         except AttributeError:
             raise InvalidNetboxOperation('{} not a valid operation'.format(name))
 
-    async def __get(self, *, endpoint, model, params):
+    async def fetch(self, *, endpoint, model, params):
         func = self.build_model(endpoint, model, 'list')
         try:
             return await func(**params)
@@ -55,21 +55,21 @@ class NetboxClient:
     async def entity(self, *, endpoint, model, params):
         """ Fetch a single record from netbox using one or more look up params """
 
-        data = await self.__get(endpoint=endpoint, model=model, params=params)
+        data = await self.fetch(endpoint=endpoint, model=model, params=params)
 
         if data.count < 1:
             return None
 
         elif data.count > 1:
             kwargs = ', '.join('='.join(i) for i in params.items())
-            raise InvalidPKConfig('Not enough criteria for {} <{}({})>'.format(self.id, endpoint, kwargs))
+            raise InvalidPKConfig('Not enough criteria for <{}({})>'.format(endpoint, kwargs))
 
         return data.results.pop(-1)
 
     async def entities(self, *, endpoint, model, params):
         """ Fetch all matching records from netbox using one or more look up params """
 
-        data = await self.__get(endpoint=endpoint, model=model, params=params)
+        data = await self.fetch(endpoint=endpoint, model=model, params=params)
 
         if data.count < 1:
             return None

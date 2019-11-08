@@ -54,7 +54,7 @@ class NetboxLoader(Loader):
             )
 
             if not r:
-                log.debug('FK lookup for {} ({}) failed, no record found'.fortmat(key, record.get(key)))
+                log.debug('FK lookup for {} ({}) failed, no record found'.format(key, record.get(key)))
                 record[key] = None
                 continue
 
@@ -118,14 +118,7 @@ class NetboxLoader(Loader):
 
         func = self.client.build_model(self.config.get('endpoint'), self.config.get('model'), method)
 
-        try:
-            return await func(**payload)
-        except ValueError:
-            # Bad response
-            raise
-        except TypeError:
-            # Bad parameters
-            raise
+        return await func(**payload)
 
     async def close(self):
         await self.client.close()
