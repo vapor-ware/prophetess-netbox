@@ -1,2 +1,2 @@
-aionetbox==1.0.1
+aionetbox>=1.0.1,<2.0
 prophetess>=0.1.0,<1.0
