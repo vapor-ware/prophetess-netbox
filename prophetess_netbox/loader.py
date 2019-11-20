@@ -78,7 +78,7 @@ class NetboxLoader(Loader):
         changed = {}
 
         for k, v in new_record.items():
-            if k in self.config.get('fk', {}):
+            if getattr(cur_record, k) and k in self.config.get('fk', {}):
                 if getattr(cur_record, k).id != v:
                     changed[k] = v
                 continue
