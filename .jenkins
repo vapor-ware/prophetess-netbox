@@ -1,14 +1,14 @@
 // Include this shared CI repository to load script helpers and libraries.
-library identifier: 'vapor@twine/flail', retriever: modernSCM(
+library identifier: 'vapor@master', retriever: modernSCM(
     [$class: 'GitSCMSource',
     remote: 'https://github.com/vapor-ware/ci-shared.git',
     credentialsId: 'vio-bot-gh'])
 
 // declared in vapor-ware/ci-shared/vars/toxPipeline.groovy
-toxPipeline {
-  releaseToPypi: True
-  twineCredential: credentials('pypi-token-prophetess-netbox-upload')
-  podTemplate = """
+toxPipeline([
+  "releaseToPypi": true,
+  "twineCredential": "pypi-token-prophetess-netbox-upload",
+  "podTemplate": """
 apiVersion: v1
 kind: Pod
 metadata:
@@ -29,4 +29,4 @@ spec:
     value: jenkins
     effect: NoSchedule
 """
-}
+])
