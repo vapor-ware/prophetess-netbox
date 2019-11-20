@@ -2,8 +2,11 @@
 import logging
 import collections
 
+from aionetbox.exceptions import AIONetboxException
+
 from prophetess.plugin import Loader
 from prophetess_netbox.client import NetboxClient
+from prophetess_netbox.exceptions import NetboxOperationFailed
 
 
 log = logging.getLogger('prophetess.plugins.netbox.loader')
@@ -119,7 +122,10 @@ class NetboxLoader(Loader):
         func = self.client.build_model(self.config.get('endpoint'), self.config.get('model'), method)
 
         log.debug('Running with modified payload: {}'.format(payload))
-        return await func(**payload)
+        try:
+            return await func(**payload)
+        except AIONetboxException as e:
+            raise NetboxOperationFailed(str(e))
 
     async def close(self):
         await self.client.close()

@@ -4,7 +4,10 @@ import asynctest
 
 from unittest.mock import patch
 
+from aionetbox.exceptions import AIONetboxException
+
 from prophetess_netbox.loader import NetboxLoader
+from prophetess_netbox.exceptions import NetboxOperationFailed
 from .fixtures import AIONetboxMagicMock, AIONetboxResponseMock
 
 
@@ -365,6 +368,34 @@ async def test_NetboxLoader_run_update_skip(mnbc):
     mnbc.return_value.entity.return_value.slug = 'goodbye'
 
     assert await nbl.run(record) is None
+
+
+@pytest.mark.asyncio
+@patch('prophetess_netbox.loader.NetboxClient')
+async def test_NetboxLoader_run_failed(mnbc):
+
+    config = {
+        'host': 'http://testing',
+        'api_key': '12test',
+        'endpoint': 'dcim',
+        'model': 'sites',
+        'pk': [],
+    }
+
+    record = {
+        'id': 1,
+        'slug': 'goodbye',
+        'tenant': 3,
+    }
+
+    nbl = NetboxLoader(id='nbloader', config=config)
+    mnbc.return_value.entity = asynctest.CoroutineMock()
+    mnbc.return_value.entity.return_value = None
+    mnbc.return_value.build_model.return_value = asynctest.CoroutineMock()
+    mnbc.return_value.build_model.return_value.side_effect = [AIONetboxException()]
+
+    with pytest.raises(NetboxOperationFailed):
+        await nbl.run(record)
 
 
 @pytest.mark.asyncio

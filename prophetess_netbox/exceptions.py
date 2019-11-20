@@ -20,3 +20,8 @@ class InvalidNetboxEndpoint(NetboxPluginException):
 class InvalidNetboxOperation(NetboxPluginException):
     """Raised when invalid netbox model or method is provided."""
     pass
+
+
+class NetboxOperationFailed(NetboxPluginException):
+    """Raised when aionetbox errors"""
+    pass
