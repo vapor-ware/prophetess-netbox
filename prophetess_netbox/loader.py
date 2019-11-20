@@ -118,6 +118,7 @@ class NetboxLoader(Loader):
 
         func = self.client.build_model(self.config.get('endpoint'), self.config.get('model'), method)
 
+        log.debug('Running with modified payload: {}'.format(payload))
         return await func(**payload)
 
     async def close(self):
