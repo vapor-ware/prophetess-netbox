@@ -5,10 +5,10 @@ library identifier: 'vapor@twine/flail', retriever: modernSCM(
     credentialsId: 'vio-bot-gh'])
 
 // declared in vapor-ware/ci-shared/vars/toxPipeline.groovy
-toxPipeline {
-  releaseToPypi: True
-  twineCredential: 'pypi-token-prophetess-netbox-upload'
-  podTemplate = """
+toxPipeline([
+  "releaseToPypi": true,
+  "twineCredential": "pypi-token-prophetess-netbox-upload",
+  "podTemplate": """
 apiVersion: v1
 kind: Pod
 metadata:
@@ -29,4 +29,4 @@ spec:
     value: jenkins
     effect: NoSchedule
 """
-}
+])
