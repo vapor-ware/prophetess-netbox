@@ -287,6 +287,42 @@ def test_NetboxLoader_diff_records_changed(mnbc):
     assert {'slug': 'goodbye', 'tenant': 3} == diff
 
 
+@patch('prophetess_netbox.loader.NetboxClient')
+def test_NetboxLoader_sanitize_record(mnbc):
+    config = {
+        'host': 'http://testing',
+        'api_key': '12test',
+        'endpoint': 'dcim',
+        'model': 'sites',
+        'cast': {
+            'latitude': 'float',
+        },
+        'pk': [],
+        'fk': {
+            'tenant': {
+                'endpoint': 'tenant',
+                'model': 'tenants',
+                'pk': [
+                    {
+                        'slug': '{tenant}',
+                    },
+                ],
+            },
+        },
+    }
+    record = {
+        'id': 1,
+        'latitude': '-80.91000',
+        'longitude': '120.00100',
+    }
+
+    nbl = NetboxLoader(id='nbloader', config=config)
+    sanitized = nbl.sanitize_record(record)
+
+    assert float('-80.91000') == sanitized['latitude']
+    assert '120.00100' == sanitized['longitude']
+
+
 @pytest.mark.asyncio
 @patch('prophetess_netbox.loader.NetboxClient')
 async def test_NetboxLoader_run_create(mnbc):

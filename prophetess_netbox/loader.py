@@ -12,6 +12,11 @@ from prophetess_netbox.exceptions import NetboxOperationFailed
 
 log = logging.getLogger('prophetess.plugins.netbox.loader')
 
+casts = {
+    'float': float,
+    'int': int,
+    'string': str,
+}
 
 class NetboxLoader(Loader):
     required_config = (
@@ -77,6 +82,18 @@ class NetboxLoader(Loader):
 
         return output
 
+    def sanitize_record(self, record):
+        if 'cast' not in self.config:
+            return record
+
+        for el, t in self.config['cast'].items():
+            if el not in record:
+                pass
+
+            record[el] = casts.get(t)(record[el])
+
+        return record
+
     def diff_records(self, cur_record, new_record):
 
         changed = {}
@@ -126,6 +143,8 @@ class NetboxLoader(Loader):
             payload['id'] = er.id
 
         if method == 'partial_update':
+            er = self.sanitize_record(er.dict())
+            record = self.sanitize_record(record)
             changed_record = self.diff_records(er, record)
             if not changed_record:
                 log.debug('Skipping {} as no data has changed'.format(record))
