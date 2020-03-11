@@ -2,6 +2,7 @@
 import logging
 import collections
 
+from aionetbox.api import NetboxResponseObject
 from aionetbox.exceptions import AIONetboxException
 
 from prophetess.plugin import Loader
@@ -79,15 +80,28 @@ class NetboxLoader(Loader):
     def diff_records(self, cur_record, new_record):
 
         changed = {}
+        log.debug(f'Comparing {cur_record} with {new_record}')
 
         for k, v in new_record.items():
-            if getattr(cur_record, k) and k in self.config.get('fk', {}):
-                if getattr(cur_record, k).id != v:
-                    changed[k] = v
-                continue
+            log.debug(f'Checking on {k}')
+            cur_value = cur_record.get(k)
 
-            if getattr(cur_record, k) != v:
-                changed[k] = v
+            if isinstance(cur_value, NetboxResponseObject):
+                cur_value = cur_value.dict()
+
+            if cur_value != v:
+                if isinstance(cur_value, type(v)):
+                    log.debug(f'{k} "{cur_value}" ({type(cur_value)}) does not match "{v}" ({type(v)})')
+                    changed[k] = v
+                    continue
+
+                # Netbox now returns nested dicts for simple value mappings. We can check if there's an ID field and
+                # compare there.
+                if isinstance(cur_value, collections.Mapping):
+                    if 'id' in cur_value:
+                        if cur_value['id'] != v:
+                            log.debug(f"{k}.id \"{cur_value['id']}\" ({type(cur_value['id'])}) does not match \"{v}\" ({type(v)})")
+                            changed[k] = v
 
         return changed
 
@@ -121,10 +135,11 @@ class NetboxLoader(Loader):
 
         func = self.client.build_model(self.config.get('endpoint'), self.config.get('model'), method)
 
-        log.debug('Running with modified payload: {}'.format(payload))
+        log.debug(f'Running {method} with payload: {payload}')
         try:
             return await func(**payload)
         except AIONetboxException as e:
+            log.debug(f'Failed to {method}')
             raise NetboxOperationFailed(str(e))
 
     async def close(self):

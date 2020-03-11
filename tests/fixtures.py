@@ -2,7 +2,7 @@ import asynctest
 from unittest.mock import MagicMock
 
 
-class AIONetboxResponseMock():
+class AIONetboxResponseMock(MagicMock):
     pass
 
 

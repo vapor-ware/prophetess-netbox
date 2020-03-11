@@ -4,6 +4,7 @@ import asynctest
 
 from unittest.mock import patch
 
+from aionetbox.api import NetboxResponseObject
 from aionetbox.exceptions import AIONetboxException
 
 from prophetess_netbox.loader import NetboxLoader
@@ -261,13 +262,18 @@ def test_NetboxLoader_diff_records_changed(mnbc):
         },
     }
 
-    cur_record = AIONetboxResponseMock()
+    tenant_output = {
+        'id': 2,
+        'name': 'hey',
+    }
 
-    cur_record.id = 1
-    cur_record.slug = 'hello'
-    cur_record.tenant = AIONetboxResponseMock()
-    cur_record.tenant.id = 2
-    cur_record.tenant.name = 'hey'
+    output = {
+        'id': 1,
+        'slug': 'hello',
+        'tenant': NetboxResponseObject.from_response(data=tenant_output, type='object'),
+    }
+
+    cur_record = NetboxResponseObject.from_response(data=output, type='dict')
 
     new_record = {
         'id': 1,
@@ -325,16 +331,20 @@ async def test_NetboxLoader_run_update(mnbc):
         'pk': [],
     }
 
-    record = {
+    exisiting_record = {
         'id': 1,
         'slug': 'goodbye',
     }
 
+    response_data = {
+        'id': 42,
+        'slug': 'updateme',
+    }
+
+    record = NetboxResponseObject.from_response(data=exisiting_record, type='dict')
     nbl = NetboxLoader(id='nbloader', config=config)
     mnbc.return_value.entity = asynctest.CoroutineMock()
-    mnbc.return_value.entity.return_value = AIONetboxResponseMock()
-    mnbc.return_value.entity.return_value.id = 42
-    mnbc.return_value.entity.return_value.slug = 'updateme'
+    mnbc.return_value.entity.return_value = NetboxResponseObject.from_response(data=response_data, type='object')
     mnbc.return_value.build_model.return_value = asynctest.CoroutineMock()
 
     await nbl.run(record)
