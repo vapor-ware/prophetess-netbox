@@ -117,7 +117,8 @@ class NetboxLoader(Loader):
                 if isinstance(cur_value, collections.Mapping):
                     if 'id' in cur_value:
                         if cur_value['id'] != v:
-                            log.debug(f"{k}.id \"{cur_value['id']}\" ({type(cur_value['id'])}) does not match \"{v}\" ({type(v)})")
+                            log.debug(f"{k}.id \"{cur_value['id']}\" ({type(cur_value['id'])}) does not
+                                match \"{v}\" ({type(v)})")
                             changed[k] = v
 
         return changed
