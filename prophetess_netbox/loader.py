@@ -91,6 +91,9 @@ class NetboxLoader(Loader):
             if el not in record:
                 pass
 
+            if record[el] is None:
+                continue
+
             record[el] = casts.get(t)(record[el])
 
         return record
