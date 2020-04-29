@@ -2,7 +2,7 @@
 from .loader import NetboxLoader
 
 __title__ = 'prophetess-netbox'
-__version__ = '0.3.2'
+__version__ = '0.3.3'
 __description__ = 'Netbox plugin for Prophetess'
 __author__ = 'Marco Ceppi'
 __author_email__ = 'marco@vapor.io'
