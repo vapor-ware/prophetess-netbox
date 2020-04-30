@@ -99,25 +99,32 @@ class NetboxLoader(Loader):
         return record
 
     def diff_records(self, cur_record, new_record):
+        ''' Build a collection of _just_ changed Fields '''
 
         changed = {}
         log.debug(f'Comparing {cur_record} with {new_record}')
 
+        # Loop through all newly transformed fields
         for k, v in new_record.items():
             log.debug(f'Checking on {k}')
             cur_value = cur_record.get(k)
 
+            # If it's an embedded netbox response, convert it to a dict
             if isinstance(cur_value, NetboxResponseObject):
                 cur_value = cur_value.dict()
 
+            # If the fields don't match perform some validation
             if cur_value != v:
-                if isinstance(cur_value, type(v)):
+
+                # If the value types align, or either is a None, we have a changed record!
+                if isinstance(cur_value, type(v)) or v is None or cur_value is None:
                     log.debug(f'{k} "{cur_value}" ({type(cur_value)}) does not match "{v}" ({type(v)})')
                     changed[k] = v
                     continue
 
                 # Netbox now returns nested dicts for simple value mappings. We can check if there's an ID field and
-                # compare there.
+                # compare there. This is the case of a linked record where an update takes just the ID but a GET of
+                # the object returns the tree of fields
                 if isinstance(cur_value, collections.Mapping):
                     if 'id' in cur_value:
                         if cur_value['id'] != v:
