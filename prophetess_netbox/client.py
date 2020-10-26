@@ -29,7 +29,7 @@ class NetboxClient:
 
     def build_model(self, endpoint, method, action):
         """ Return the aionetbox Api method from an endpoint class """
-        name = '{}_{}_{}'.format(endpoint, method, action)
+        name = '{}_{}_{}'.format(endpoint, method.replace('-', '_'), action)
 
         try:
             api = getattr(self.client, endpoint)
